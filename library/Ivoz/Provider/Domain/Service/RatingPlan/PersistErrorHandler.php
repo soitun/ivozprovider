@@ -8,6 +8,8 @@ use Doctrine\DBAL\Driver\PDOException;
 
 class PersistErrorHandler implements PersistErrorHandlerInterface
 {
+    const ON_ERROR_PRIORITY = self::PRIORITY_NORMAL;
+
     /*
      * Mysql error code list:
      * https://dev.mysql.com/doc/refman/5.5/en/error-messages-server.html
@@ -16,8 +18,11 @@ class PersistErrorHandler implements PersistErrorHandlerInterface
 
     const RATING_PLAN_DUPLICATED_WEIGHT = 40002;
 
-    public function __construct()
+    public static function getSubscribedEvents()
     {
+        return [
+            self::EVENT_ON_ERROR => self::ON_ERROR_PRIORITY,
+        ];
     }
 
     public function handle(\Exception $exception)
@@ -30,7 +35,6 @@ class PersistErrorHandler implements PersistErrorHandlerInterface
         if (!$pdoException instanceof PDOException) {
             return;
         }
-
 
         $isDuplicatedWeightError =
             $pdoException->getErrorCode() === self::MYSQL_ERROR_DUPLICATE_ENTRY
