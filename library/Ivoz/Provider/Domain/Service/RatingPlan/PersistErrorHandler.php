@@ -15,6 +15,7 @@ class PersistErrorHandler implements PersistErrorHandlerInterface
     const MYSQL_ERROR_DUPLICATE_ENTRY = 1062;
 
     const RATING_PLAN_DUPLICATED_WEIGHT = 40002;
+    const RATING_PLAN_DUPLICATED_WEIGHT_NAME = 'weight';
 
     public function __construct()
     {
@@ -34,7 +35,7 @@ class PersistErrorHandler implements PersistErrorHandlerInterface
 
         $isDuplicatedWeightError =
             $pdoException->getErrorCode() === self::MYSQL_ERROR_DUPLICATE_ENTRY
-            && strpos($exception->getMessage(), self::RATING_PLAN_DUPLICATED_WEIGHT);
+            && stripos($exception->getMessage(), self::RATING_PLAN_DUPLICATED_WEIGHT_NAME);
 
         if ($isDuplicatedWeightError) {
             throw new \DomainException(
